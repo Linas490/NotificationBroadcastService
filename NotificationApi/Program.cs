@@ -16,6 +16,8 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();      // Swagger support
+builder.Services.AddSwaggerGen();                // Swagger generator
 
 var app = builder.Build();
 
