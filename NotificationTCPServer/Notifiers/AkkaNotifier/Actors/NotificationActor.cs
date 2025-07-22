@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Notiffcations.Shared;
 
 namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
 {
@@ -44,7 +45,4 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
             });
         }
     }
-    public record AddClient(TcpClient Client);
-    public record RemoveClient(TcpClient Client);
-    public record Notification(string Message);
 }

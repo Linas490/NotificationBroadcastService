@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Akka.Configuration;
+using Notiffcations.Shared;
 using NotificationTCPServer.Notifiers.AkkaNotifier.Actors;
 using System;
 using System.Collections.Generic;
