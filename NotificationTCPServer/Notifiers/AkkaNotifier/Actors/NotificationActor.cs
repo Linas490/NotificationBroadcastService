@@ -8,6 +8,7 @@ public class NotificationActor : ReceiveActor
 {
     private readonly HashSet<TcpClient> _clients = new HashSet<TcpClient>();
     private readonly INotificationRepository _notificationRepository;
+    UTF8Encoding utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
     public NotificationActor(INotificationRepository notificationRepository)
     {
@@ -23,7 +24,27 @@ public class NotificationActor : ReceiveActor
             _clients.Remove(msg.Client);
         });
 
-        ReceiveAsync<Notify>(async msg =>
+        Receive<Notify>(msg =>
+        {
+            var data = Encoding.UTF8.GetBytes(msg.Message.Trim() + "\n");
+
+            foreach (var client in _clients)
+            {
+                try
+                {
+                    if (client.Connected)
+                    {
+                        client.GetStream().Write(data, 0, data.Length);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _clients.Remove(client);
+                }
+            }
+        });
+
+        ReceiveAsync<NotifyPersist>(async msg =>
         {
             try
             {
@@ -38,7 +59,7 @@ public class NotificationActor : ReceiveActor
                 Console.WriteLine($"DB insert error: {ex.Message}");
             }
 
-            var data = Encoding.UTF8.GetBytes(msg.Message + "\n");
+            var data = Encoding.UTF8.GetBytes(msg.Message.Trim() + "\n");
 
             foreach (var client in _clients.ToList()) // copy list to avoid modification during iteration
             {
@@ -46,7 +67,11 @@ public class NotificationActor : ReceiveActor
                 {
                     if (client.Connected)
                     {
-                        client.GetStream().Write(data, 0, data.Length);
+
+                        using var writer = new StreamWriter(client.GetStream(), utf8NoBom, leaveOpen: true);
+                        await writer.WriteLineAsync(msg.Message.Trim());
+                        await writer.FlushAsync();
+
                     }
                 }
                 catch (Exception ex)

@@ -16,6 +16,7 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
 
             Receive<AddClient>(msg => _notificationActor.Tell(msg));
             Receive<RemoveClient>(msg => _notificationActor.Tell(msg));
+            Receive<NotifyPersist>(msg => _notificationActor.Tell(msg));
             Receive<Notify>(msg => _notificationActor.Tell(msg));
         }
     }

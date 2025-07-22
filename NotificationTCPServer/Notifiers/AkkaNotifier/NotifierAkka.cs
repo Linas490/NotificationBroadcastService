@@ -62,5 +62,10 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier
         {
             await _actorSystem.Terminate();
         }
+
+        public void NotifyPersist(string message)
+        {
+            _supervisor.Tell(new NotifyPersist(message));
+        }
     }
 }

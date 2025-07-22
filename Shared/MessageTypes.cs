@@ -10,6 +10,7 @@ namespace Shared
     public class MessageTypes
     {
         public record Notify(string Message);
+        public record NotifyPersist(string Message);
         public record AddClient(TcpClient Client);
         public record RemoveClient(TcpClient Client);
     }

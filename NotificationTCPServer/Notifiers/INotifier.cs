@@ -12,5 +12,6 @@ namespace NotificationTCPServer.Notifiers
         void AddClient(TcpClient client);
         void RemoveClient(TcpClient client);
         void Notify(string message);
+        void NotifyPersist(string message);
     }
 }
