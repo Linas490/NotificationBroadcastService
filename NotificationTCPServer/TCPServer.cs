@@ -6,16 +6,19 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Akka.Actor;
 
 namespace NotificationTCPServer
 {
     public class TCPServer
     {
         private TcpListener _listener;
+        private IActorRef _notificationActor;
 
-        public TCPServer(int port)
+        public TCPServer(int port, IActorRef notificationActor)
         {
             _listener = new TcpListener(IPAddress.Any, port);
+            _notificationActor = notificationActor;
         }
 
         public async Task ListenAsync() 
@@ -27,15 +30,17 @@ namespace NotificationTCPServer
             {
                 var client = await _listener.AcceptTcpClientAsync();
                 Console.WriteLine("TCP SERVER MESSAGE: Client connected.");
-                HandleClientAsync(client);
+                _ = HandleClientAsync(client);
             }
         }
 
-        private async void HandleClientAsync(TcpClient client)
+        private async Task HandleClientAsync(TcpClient client)
         {
             try
             {
                 //add client to actor
+                _notificationActor.Tell(new AddClient(client));
+
                 using (var stream = client.GetStream())
                 {
                     var buffer = new byte[1024];
@@ -74,6 +79,7 @@ namespace NotificationTCPServer
             {
                 client.Close();
                 //Remove client from actor
+                _notificationActor.Tell(new RemoveClient(client));
                 Console.WriteLine("TCP SERVER MESSAGE: Client disconnected.");
             }
         }
@@ -83,7 +89,9 @@ namespace NotificationTCPServer
             {
                 string message = line.Substring("NOTIFY:".Length).Trim();
                 Console.WriteLine("TCP SERVER MESSAGE: Received notification: " + message);
+
                 //Send to actor
+                _notificationActor.Tell(new Notification(message));
             }
             else
             {
