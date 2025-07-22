@@ -1,6 +1,6 @@
-﻿using NotificationApi.Models;
-using NotificationApi.Repositories.Interfaces;
+﻿using NotificationApi.Repositories.Interfaces;
 using NotificationApi.Services.Interfaces;
+using Shared.Model;
 
 namespace NotificationApi.Services.Services
 {

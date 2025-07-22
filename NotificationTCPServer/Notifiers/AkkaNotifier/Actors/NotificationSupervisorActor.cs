@@ -1,10 +1,7 @@
 ﻿using Akka.Actor;
-using Notiffcations.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Akka.DependencyInjection;
+using Shared;
+using static Shared.MessageTypes;
 
 namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
 {
@@ -14,11 +11,12 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
 
         public NotificationSupervisorActor()
         {
-            _notificationActor = Context.ActorOf(Props.Create(() => new NotificationActor()), "notification");
+            var resolver = DependencyResolver.For(Context.System);
+            _notificationActor = Context.ActorOf(resolver.Props<NotificationActor>(), "notification");
 
             Receive<AddClient>(msg => _notificationActor.Tell(msg));
             Receive<RemoveClient>(msg => _notificationActor.Tell(msg));
-            Receive<Notification>(msg => _notificationActor.Tell(msg));
+            Receive<Notify>(msg => _notificationActor.Tell(msg));
         }
     }
 }

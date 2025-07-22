@@ -1,48 +1,60 @@
 ﻿using Akka.Actor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NotificationApi.Repositories.Interfaces;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using Notiffcations.Shared;
+using static Shared.MessageTypes;
 
-namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
+public class NotificationActor : ReceiveActor
 {
-    public class NotificationActor : ReceiveActor
+    private readonly HashSet<TcpClient> _clients = new HashSet<TcpClient>();
+    private readonly INotificationRepository _notificationRepository;
+
+    public NotificationActor(INotificationRepository notificationRepository)
     {
-        private readonly HashSet<TcpClient> _clients = new HashSet<TcpClient>();
-        public NotificationActor()
+        _notificationRepository = notificationRepository;
+
+        Receive<AddClient>(msg =>
         {
-            Receive<AddClient>(msg =>
-            {
-                _clients.Add(msg.Client);
-            });
+            _clients.Add(msg.Client);
+        });
 
-            Receive<RemoveClient>(msg =>
-            {
-                _clients.Remove(msg.Client);
-            });
+        Receive<RemoveClient>(msg =>
+        {
+            _clients.Remove(msg.Client);
+        });
 
-            Receive<Notification>(msg =>
+        ReceiveAsync<Notify>(async msg =>
+        {
+            try
             {
-                var data = Encoding.UTF8.GetBytes(msg.Message + "\n");
-
-                foreach (var client in _clients)
+                await _notificationRepository.AddNotificationAsync(new()
                 {
-                    try
+                    Text = msg.Message,
+                    Timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB insert error: {ex.Message}");
+            }
+
+            var data = Encoding.UTF8.GetBytes(msg.Message + "\n");
+
+            foreach (var client in _clients.ToList()) // copy list to avoid modification during iteration
+            {
+                try
+                {
+                    if (client.Connected)
                     {
-                        if (client.Connected)
-                        {
-                            client.GetStream().Write(data, 0, data.Length);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _clients.Remove(client);
+                        client.GetStream().Write(data, 0, data.Length);
                     }
                 }
-            });
-        }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"TCP write error: {ex.Message}");
+                    _clients.Remove(client);
+                }
+            }
+        });
     }
 }

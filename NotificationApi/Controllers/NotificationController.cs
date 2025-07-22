@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NotificationApi.Models;
 using NotificationApi.Services.Interfaces;
+using Shared.Model;
 
 namespace NotificationApi.Controllers
 {

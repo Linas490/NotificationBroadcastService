@@ -1,13 +1,10 @@
 ﻿using Akka.Actor;
 using Akka.Configuration;
-using Notiffcations.Shared;
+using Akka.DependencyInjection;
 using NotificationTCPServer.Notifiers.AkkaNotifier.Actors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Shared;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using static Shared.MessageTypes;
 
 namespace NotificationTCPServer.Notifiers.AkkaNotifier
 {
@@ -16,8 +13,9 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier
         private readonly ActorSystem _actorSystem;
         private readonly IActorRef _supervisor;
 
-        public NotifierAkka()
+        public NotifierAkka(IServiceProvider serviceProvider)
         {
+            // Akka konfigūracija (galima vėliau iškelti)
             var config = ConfigurationFactory.ParseString(@"
             akka {
               actor {
@@ -31,8 +29,18 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier
               }
             }");
 
-            _actorSystem = ActorSystem.Create("NotificationSystem", config);
-            _supervisor = _actorSystem.ActorOf(Props.Create(() => new NotificationSupervisorActor()), "supervisor");
+            // Sukuriam DI setup'ą Akka
+            var di = DependencyResolverSetup.Create(serviceProvider);
+            var bootstrap = BootstrapSetup.Create().WithConfig(config);
+            var setup = bootstrap.And(di);
+
+            _actorSystem = ActorSystem.Create("NotificationSystem", setup);
+
+            // Registruojam resolver
+            var resolver = DependencyResolver.For(_actorSystem);
+
+            // Sukuriam supervisor per DI
+            _supervisor = _actorSystem.ActorOf(resolver.Props<NotificationSupervisorActor>(), "supervisor");
         }
 
         public void AddClient(TcpClient client)
@@ -47,7 +55,12 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier
 
         public void Notify(string message)
         {
-            _supervisor.Tell(new Notification(message));
+            _supervisor.Tell(new Notify(message));
+        }
+
+        public async Task ShutdownAsync()
+        {
+            await _actorSystem.Terminate();
         }
     }
 }
