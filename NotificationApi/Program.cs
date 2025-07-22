@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using NotificationApi.Data;
+using NotificationApi.Repositories.Interfaces;
+using NotificationApi.Repositories.Repositories;
+using NotificationApi.Services.Services;
+using NotificationApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +12,8 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddControllers();
 
