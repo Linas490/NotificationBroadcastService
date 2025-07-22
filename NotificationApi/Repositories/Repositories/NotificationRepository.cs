@@ -9,11 +9,7 @@ namespace NotificationApi.Repositories.Repositories
     public class NotificationRepository : INotificationRepository
     {
         private readonly AppDbContext _context;
-
-        public NotificationRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        public NotificationRepository(AppDbContext context) => this._context = context;
 
         public async Task<bool> AddNotificationAsync(Notification notification)
         {

@@ -7,11 +7,7 @@ namespace NotificationApi.Services.Services
     public class NotificationService : INotificationService
     {
         private readonly INotificationRepository _notificationRepository;
-
-        public NotificationService(INotificationRepository notificationRepository)
-        {
-            _notificationRepository = notificationRepository;
-        }
+        public NotificationService(INotificationRepository notificationRepository) => this._notificationRepository = notificationRepository;
 
         public async Task<bool> AddNotificationAsync(Notification notification)
         {
