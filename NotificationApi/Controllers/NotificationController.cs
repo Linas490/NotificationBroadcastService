@@ -13,8 +13,9 @@ namespace NotificationApi.Controllers
 
         public async Task<ActionResult<List<Notification>>> GetLastNotificationsAsync([FromQuery] int limit)
         {
-            //what if -5 or string?
-            //what if more that existing messages?
+            if (limit <= 0)
+                return BadRequest("FAILED: Limit must be greater than zero.");
+
             var lastNotifications = await _notificationService.GetLastNotificationsAsync(limit);
             return Ok(lastNotifications);
         }
@@ -23,10 +24,10 @@ namespace NotificationApi.Controllers
         public async Task<ActionResult> AddNotificationAsync([FromBody] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                return BadRequest("Text cannot be empty.");
+                return BadRequest("FAILED: Text cannot be empty.");
 
             if (text.Length > 500)
-                return BadRequest("Message too long.");
+                return BadRequest("FAILED: Message too long.");
 
             var notification = new Notification
             {
@@ -37,8 +38,5 @@ namespace NotificationApi.Controllers
             await _notificationService.AddNotificationAsync(notification);
             return Ok(notification);
         }
-
-
-
     }
 }
