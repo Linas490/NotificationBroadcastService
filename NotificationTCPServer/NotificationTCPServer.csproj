@@ -20,6 +20,10 @@
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Notifications.Shared\Notifications.Shared.csproj" />
+	</ItemGroup>
+
 	<!-- Copy App.config to output directory (if needed) -->
 	<ItemGroup>
 		<None Update="App.config">
