@@ -13,6 +13,7 @@
 		<!-- Akka.NET dependencies -->
 		<PackageReference Include="Akka" Version="1.5.46" />
 		<PackageReference Include="Akka.DependencyInjection" Version="1.5.46" />
+		<PackageReference Include="Akka.Remote" Version="1.5.46" />
 
 		<!-- Other dependencies -->
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

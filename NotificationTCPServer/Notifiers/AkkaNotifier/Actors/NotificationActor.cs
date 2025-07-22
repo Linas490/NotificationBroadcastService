@@ -6,14 +6,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NotificationTCPServer
+namespace NotificationTCPServer.Notifiers.AkkaNotifier.Actors
 {
     public class NotificationActor : ReceiveActor
     {
         private readonly HashSet<TcpClient> _clients = new HashSet<TcpClient>();
         public NotificationActor()
         {
-            Receive<AddClient>(msg => 
+            Receive<AddClient>(msg =>
             {
                 _clients.Add(msg.Client);
             });
@@ -23,7 +23,8 @@ namespace NotificationTCPServer
                 _clients.Remove(msg.Client);
             });
 
-            Receive<Notification>(msg => {
+            Receive<Notification>(msg =>
+            {
                 var data = Encoding.UTF8.GetBytes(msg.Message + "\n");
 
                 foreach (var client in _clients)
