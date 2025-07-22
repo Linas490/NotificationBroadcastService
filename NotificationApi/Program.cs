@@ -30,22 +30,18 @@ using (var scope = app.Services.CreateScope())
         db.Database.Migrate();
 }
 
+// Enable Swagger in all environments (optional: limit to dev)
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Notification API V1");
-    options.RoutePrefix = "swagger";
+    options.RoutePrefix = "swagger"; // This makes Swagger UI the root page 
 });
 
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
-//Redirect root to Swagger
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();

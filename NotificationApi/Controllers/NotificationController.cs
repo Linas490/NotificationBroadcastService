@@ -11,6 +11,7 @@ namespace NotificationApi.Controllers
         private readonly INotificationService _notificationService;
         public NotificationController(INotificationService notificationService) => _notificationService = notificationService;
 
+        [HttpGet]
         public async Task<ActionResult<List<Notification>>> GetLastNotificationsAsync([FromQuery] int limit)
         {
             if (limit <= 0)
