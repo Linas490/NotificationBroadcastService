@@ -8,8 +8,12 @@ namespace NotificationTCPServer
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            int port = 5000;
+            var server = new TCPServer(port);
+
+            await server.ListenAsync();
         }
     }
 }
