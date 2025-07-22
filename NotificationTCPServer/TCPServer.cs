@@ -41,34 +41,13 @@ namespace NotificationTCPServer
             {
                 _notifier.AddClient(client);
 
-                using (var stream = client.GetStream())
+                using var stream = client.GetStream();
+                using var reader = new StreamReader(stream, Encoding.UTF8);
+
+                string? line;
+                while ((line = await reader.ReadLineAsync()) != null)
                 {
-                    var buffer = new byte[1024];
-                    int bytesRead;
-                    var sb = new StringBuilder();
-
-                    while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                    {
-                        var message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                        sb.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-
-                        // Check for newline - we process line by line
-                        string content = sb.ToString();
-                        int newlineIndex;
-
-                        while ((newlineIndex = content.IndexOf('\n')) >= 0)
-                        {
-                            string line = content.Substring(0, newlineIndex).Trim('\r', '\n');
-                            content = content.Substring(newlineIndex + 1);
-
-                            // Process the line
-                            ProcessLine(line);
-
-                            sb.Clear();
-                            sb.Append(content);
-                        }
-                    }
+                    ProcessLine(line);
                 }
             }
             catch (Exception ex)
@@ -78,25 +57,36 @@ namespace NotificationTCPServer
             finally
             {
                 client.Close();
-                //Remove client from actor
                 _notifier.RemoveClient(client);
                 Console.WriteLine("TCP SERVER MESSAGE: Client disconnected.");
             }
         }
+
         private void ProcessLine(string line)
         {
+            if (string.IsNullOrWhiteSpace(line))
+                return;
+
             if (line.StartsWith("NOTIFY:", StringComparison.OrdinalIgnoreCase))
             {
                 string message = line.Substring("NOTIFY:".Length).Trim();
+
+                if (string.IsNullOrEmpty(message))
+                {
+                    Console.WriteLine("TCP SERVER WARNING: Empty NOTIFY message received.");
+                    return;
+                }
+
                 Console.WriteLine("TCP SERVER MESSAGE: Received notification: " + message);
 
                 //Send to actor
-                _notifier.Notify(message);
+                _notifier.NotifyPersist(message);
             }
             else
             {
                 Console.WriteLine("TCP SERVER MESSAGE: Invalid message received: " + line);
             }
         }
+
     }
 }

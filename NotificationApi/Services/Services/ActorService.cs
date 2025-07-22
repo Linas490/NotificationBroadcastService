@@ -2,6 +2,7 @@
 using Akka.Configuration;
 using NotificationApi.Services.Interfaces;
 using System.Net.Sockets;
+using static Shared.MessageTypes;
 
 namespace NotificationApi.Services.Services
 {
@@ -33,7 +34,7 @@ namespace NotificationApi.Services.Services
 
         public Task SendNotificationAsync(string message)
         {
-            remoteActor.Tell(new Notiffcations.Shared.Notification(message));
+            remoteActor.Tell(new Notify(message));
             return Task.CompletedTask;
         }
     }

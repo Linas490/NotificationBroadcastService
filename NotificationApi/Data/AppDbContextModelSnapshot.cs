@@ -3,8 +3,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NotificationApi.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Shared.Data;
 
 #nullable disable
 

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using NotificationApi.Data;
 using NotificationApi.Repositories.Interfaces;
 using NotificationApi.Repositories.Repositories;
 using NotificationApi.Services.Services;
 using NotificationApi.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
+using Shared.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

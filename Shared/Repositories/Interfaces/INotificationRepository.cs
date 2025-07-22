@@ -1,8 +1,8 @@
 ﻿using Shared.Model;
 
-namespace NotificationApi.Services.Interfaces
+namespace NotificationApi.Repositories.Interfaces
 {
-    public interface INotificationService
+    public interface INotificationRepository
     {
         Task<bool> AddNotificationAsync(Notification notification);
         Task<IEnumerable<Notification>> GetLastNotificationsAsync(int limit);
