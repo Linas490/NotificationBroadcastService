@@ -36,7 +36,11 @@ namespace NotificationApi.Controllers
                 Timestamp = DateTime.UtcNow
             };
 
-            await _notificationService.AddNotificationAsync(notification);
+            var success = await _notificationService.AddNotificationAsync(notification);
+
+            if (!success)
+                return StatusCode(500, "FAILED: Could not save notification.");
+
             return Ok(notification);
         }
     }

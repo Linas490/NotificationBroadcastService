@@ -84,6 +84,10 @@ namespace NotificationBroadcastService.Test.Controllers
             // Arrange
             var validText = "Test message";
 
+            A.CallTo(() => _notificationService.AddNotificationAsync(
+                A<Notification>.That.Matches(n => n.Text == validText)))
+                .Returns(true);
+
             // Act
             var result = await _controller.AddNotificationAsync(validText);
 
@@ -96,5 +100,6 @@ namespace NotificationBroadcastService.Test.Controllers
                 .Which.Value.Should().BeOfType<Notification>()
                 .Which.Text.Should().Be(validText);
         }
+
     }
 }

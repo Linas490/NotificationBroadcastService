@@ -24,6 +24,7 @@ namespace NotificationTCPServer
 
         public async Task ListenAsync() 
         {
+            //we listen for incoming TCP connections and hadle them (get stream-messages)
             _listener.Start();
             Console.WriteLine("TCP SERVER MESSAGE: Server started. Waiting for connections...");
 
@@ -39,6 +40,7 @@ namespace NotificationTCPServer
         {
             try
             {
+                // Add client to notifier - will pass to notifier actor
                 _notifier.AddClient(client);
 
                 using var stream = client.GetStream();
@@ -56,6 +58,7 @@ namespace NotificationTCPServer
             }
             finally
             {
+                //when stream is closed, we remove client from notifier
                 client.Close();
                 _notifier.RemoveClient(client);
                 Console.WriteLine("TCP SERVER MESSAGE: Client disconnected.");

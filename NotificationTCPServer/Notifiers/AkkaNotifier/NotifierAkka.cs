@@ -15,7 +15,7 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier
 
         public NotifierAkka(IServiceProvider serviceProvider)
         {
-            // Akka konfigūracija (galima vėliau iškelti)
+            // Akka configuration - maybe later put in separate file
             var config = ConfigurationFactory.ParseString(@"
             akka {
               actor {
@@ -29,17 +29,17 @@ namespace NotificationTCPServer.Notifiers.AkkaNotifier
               }
             }");
 
-            // Sukuriam DI setup'ą Akka
+            // create akka DI 
             var di = DependencyResolverSetup.Create(serviceProvider);
             var bootstrap = BootstrapSetup.Create().WithConfig(config);
             var setup = bootstrap.And(di);
 
             _actorSystem = ActorSystem.Create("NotificationSystem", setup);
 
-            // Registruojam resolver
+        
             var resolver = DependencyResolver.For(_actorSystem);
 
-            // Sukuriam supervisor per DI
+            // create supervisor di
             _supervisor = _actorSystem.ActorOf(resolver.Props<NotificationSupervisorActor>(), "supervisor");
         }
 

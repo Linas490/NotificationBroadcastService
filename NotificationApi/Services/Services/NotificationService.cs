@@ -19,7 +19,7 @@ namespace NotificationApi.Services.Services
             if ((notification == null) || string.IsNullOrWhiteSpace(notification.Text))
                 return false;
 
-            _actorService.SendNotificationAsync(notification.Text);
+            await _actorService.SendNotificationAsync(notification.Text);
             return await _notificationRepository.AddNotificationAsync(notification);
         }
 

@@ -9,6 +9,7 @@ namespace Shared
 {
     public class MessageTypes
     {
+        //message types of actor
         public record Notify(string Message);
         public record NotifyPersist(string Message);
         public record AddClient(TcpClient Client);
