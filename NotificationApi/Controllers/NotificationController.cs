@@ -22,7 +22,7 @@ namespace NotificationApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddNotificationAsync([FromBody] string text)
+        public async Task<ActionResult<Notification>> AddNotificationAsync([FromBody] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return BadRequest("FAILED: Text cannot be empty.");
