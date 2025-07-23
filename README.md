@@ -20,7 +20,7 @@ In both `NotificationApi/appsettings.json` and `NotificationTCPServer/appsetting
   "DefaultConnection": "Host=localhost;Port=yourport;Database=notificationsdb;Username=postgres;Password=yourpassword"
 }
 ```
-Change port, username and password fields to same ones as   
+Change the Port, Username, and Password fields to match the settings you chose during PostgreSQL installation. Make sure the database notificationsdb exists or create it before running the application. 
 
 ### 3. Run the Services
 
