@@ -80,3 +80,43 @@ telnet localhost 5000
 4. Set **Connection type** to: `Raw`  
 5. Set **Port** to: `5000`  
 6. Click **Open** to connect
+
+## Design Notes
+
+### One actor versus one per connection
+
+There are several reasons for using a single actor to handle all TCP client communication rather than spawning one actor per connection:
+
+#### Resource Efficiency
+
+Using one actor per connection would increase the total number of actors in the system, which consumes more memory and CPU resources. In applications with many connections, this could lead to unnecessary overhead and reduced performance.
+
+#### Reduced Complexity
+
+In a model where each TCP connection has its own actor:
+
+- Each actor would need to know about all the other actors to broadcast messages, resulting in duplicated references and increased state management complexity.
+- Alternatively, you would need a central coordinator actor to track all active connection actors. However, this creates a centralized bottleneck, which defeats the purpose of distributing logic across actors.
+
+#### Shared State and Persistence
+
+In this system, the actor is responsible for saving messages to a repository (e.g., a database). If each connection had its own actor:
+
+- All actors would either share a single Repository instance (risking concurrent access issues),
+- Or each would maintain a separate instance (introducing redundant connections).
+
+### Back-Pressure and Scaling
+
+Using a single actor can lead to back-pressure, where the actor is unable to process incoming messages fast enough and its mailbox fills up.
+
+In a larger system, a better solution is to use a worker pool:
+
+A master actor receives messages or TCP clients and distributes them to multiple worker actors, each responsible for handling and broadcasting messages to their own set of clients.
+
+### Supervision and Fault Tolerance
+
+In a production system, actor failures are typically managed using supervision strategies. A supervisor actor monitors its child actors and defines how to respond when a child fails, for example by:
+
+- Restarting the failed actor (restoring its old state if possible).
+- Stopping the actor if the failure is unrecoverable.
+
