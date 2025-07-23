@@ -27,10 +27,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (db.Database.GetPendingMigrations().Any())
-        db.Database.Migrate();
-}
 
+    // Only run migrations if the DB provider supports it (not supported by in memory databases)
+    if (db.Database.IsRelational())
+    {
+        if (db.Database.GetPendingMigrations().Any())
+            db.Database.Migrate();
+    }
+}
 // Enable Swagger in all environments (optional: limit to dev)
 app.UseSwagger();
 app.UseSwaggerUI(options =>
@@ -46,3 +50,8 @@ app.MapControllers();
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();
+
+namespace NotificationApi
+{
+    public partial class Program { }
+}
