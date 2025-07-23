@@ -21,7 +21,9 @@ using Shared.Data;
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        var connectionString = "Host=localhost;Port=5433;Database=notificationsdb;Username=postgres;Password=secured123";
+        var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+        var connectionString = config.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
