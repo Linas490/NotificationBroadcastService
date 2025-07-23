@@ -122,5 +122,10 @@ In a production system, actor failures are typically managed using supervision s
 
 ## Architecture
 
+### TCP Client connect and send message sequence
 ![sequence diagram](https://github.com/Linas490/NotificationBroadcastService/blob/138d475e82bce18afeb8af482f2d506618b6b62c/sequenceDiagram.png)
+### Notification Service System
+![system diagram](https://github.com/Linas490/NotificationBroadcastService/blob/8a0e0c8951b4e6f7e9376b48ba5df864a7f0b6bc/system.png)
+The decision to use repositories in both the API and the TCP server systems was made to ensure system resilience and availability. This design allows either system to function independently — if the TCP server becomes unavailable, the API can still operate using the shared repository, and vice versa.
+
 
