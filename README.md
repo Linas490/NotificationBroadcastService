@@ -121,4 +121,6 @@ In a production system, actor failures are typically managed using supervision s
 - Stopping the actor if the failure is unrecoverable.
 
 ## Architecture
-![sequence diagram(https://github.com/Linas490/NotificationBroadcastService/blob/138d475e82bce18afeb8af482f2d506618b6b62c/sequenceDiagram.png)]
+
+![sequence diagram](https://github.com/Linas490/NotificationBroadcastService/blob/138d475e82bce18afeb8af482f2d506618b6b62c/sequenceDiagram.png)
+
